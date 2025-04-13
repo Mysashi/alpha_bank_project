@@ -1,5 +1,8 @@
 {
     "compilerOptions": {
+      "target": "ES6",
+      "lib": ["ES6", "DOM"],
+      "module": "ES6",
       "baseUrl": "./",
       "paths": {
         "@/*": ["src/*"]
@@ -8,9 +11,6 @@
         "./node_modules/@types",
         "./src/types"
       ]
-      ,"compilerOptions": {
-    "target": "ES6",
-    "lib": ["ES6", "DOM"],
-    "module": "ES6",
-    }
   }
+
+}
