@@ -1,0 +1,174 @@
+:root {
+    --font-roboto: "Roboto", sans-serif;
+    --font-poppins: "Poppins", sans-serif;
+    --font-patrick: "Patrick Hand", sans-serif;
+    --font-zen: "Zen Kaku Gothic Antique", sans-serif;
+    --font-montserrat: "Montserrat", sans-serif;
+    --font-inter: "Inter", sans-serif;
+    --font-helvetica: "Helvetica", sans-serif;
+    --font-lato: "Lato", sans-serif;
+}
+
+/* Сброс стилей */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #fff;
+    font-family: var(--font-roboto);
+    color: #333;
+}
+
+.dashboard {
+    display: flex;
+    width: 1440px;
+    height: 1024px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* Боковая панель */
+.sidebar {
+    width: 248px;
+    background: #2c3e50;
+    color: white;
+    padding: 30px 20px;
+    font-family: var(--font-poppins);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 50px;
+    font-family: var(--font-roboto);
+    font-weight: 700;
+}
+
+.menu ul {
+    list-style: none;
+}
+
+.menu li {
+    margin-bottom: 25px;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.menu .icon {
+    font-family: var(--font-patrick);
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+/* Основной контент */
+.content {
+    flex: 1;
+    padding: 45px 60px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 55px;
+}
+
+.header h1 {
+    font-size: 32px;
+    font-weight: 500;
+    font-family: var(--font-roboto);
+}
+
+.language-switcher select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-family: var(--font-inter);
+}
+
+/* Форма входа */
+.login-form {
+    max-width: 400px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--font-poppins);
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: var(--font-roboto);
+}
+
+.btn-login {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 0;
+    width: 100%;
+    border-radius: 6px;
+    font-family: var(--font-roboto);
+    font-weight: 500;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.btn-signup {
+    display: block;
+    text-align: center;
+    color: #3498db;
+    text-decoration: none;
+    font-family: var(--font-roboto);
+    font-weight: 500;
+}
+
+/* Фильтры */
+.filters {
+    margin-top: 60px;
+}
+
+.filters h2 {
+    font-family: var(--font-zen);
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.filter-options {
+    display: flex;
+    gap: 15px;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-inter);
+    font-weight: 500;
+    cursor: pointer;
+}
