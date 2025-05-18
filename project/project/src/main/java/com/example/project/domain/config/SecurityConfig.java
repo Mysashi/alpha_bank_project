@@ -83,15 +83,12 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/*") // для всех путей
-                        .allowedOrigins("http://127.0.0.1:5500") // фронтенд-адрес, можно указать
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowCredentials(true);
+                registry.addMapping("/greeting-javaconfig").allowedOrigins("http://localhost:5500")
+                        .allowedOrigins("http://127.0.0.1:5500");
             }
         };
     }
