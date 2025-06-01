@@ -5,32 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Настройки профиля</title>
 
-  <!-- Подключаем CSS -->
+  <!-- Шрифты -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>  
+
+
   <div class="sidebar-menu">
-      <ul>
+    <ul>
+      <li>
         <img src="img/Wireframes - Logo.svg" alt="Название" class="menu-icon">
-        <li>
-          <img src="img/Frame 1000004544.svg" alt="Главная" class="menu-icon">
-        </li>
-        <li>
-          <img src="img/Frame 1000004547.svg" alt="Календарь" class="menu-icon">
-        </li>
-        <li>
-          <img src="img/elements.svg" alt="" class="menu-icon"><img src="img/Frame 1000004546.svg" alt="Таблица" class="menu-icon">
-        </li>
+      </li>
+      <li>
+        <a href="Main.html"><img src="img/Frame 1000004544.svg" alt="Главная" class="menu-icon"></a>
+      </li>
+      <li>
+        <a href="calendar.html"><img src="img/Frame 1000004547.svg" alt="Календарь" class="menu-icon"></a>
+      </li>
+      <li>
+        <a href="tasks.html"><img src="img/elements.svg" alt="" class="menu-icon"><img src="img/Frame 1000004546.svg" alt="Таблица" class="menu-icon"></a>
+      </li>
       <li class="has-dropdown">
         <img src="img/Frame 10000045440.svg" alt="Команды" class="menu-icon">
         <ul>
-          <img src="img/Frame 1000004546222.svg" alt="Команда1" class="menu-icon">
-          <img src="img/Frame 1000004547222.svg" alt="Команда2" class="menu-icon">
-          <img src="img/Frame 1000004548222.svg" alt="Команда3" class="menu-icon">
+          <li><img src="img/Frame 1000004546222.svg" alt="Команда1" class="menu-icon"></li>
+          <li><img src="img/Frame 1000004547222.svg" alt="Команда2" class="menu-icon"></li>
+          <li><img src="img/Frame 1000004548222.svg" alt="Команда3" class="menu-icon"></li>
         </ul>
       </li>
     </ul>
-    <button class="logout-button">Выйти</button>
+    <div class="logout-section">
+      <img src="img/Frame 1000004544111.svg" alt="Выйти" class="logout-model" /> 
+    </div>
+    
   </div>
 
   <div class="main">
@@ -38,55 +48,84 @@
       <div class="top-bar">
         <input type="text" placeholder="Поиск" />
         <div class="icons">
-          <button>＋</button>
-          <button>🔔</button>
-          <button>👤</button>
+          <button class="icons" aria-label="Уведомления">
+    <img src="img/wireframes-icons-2.svg" alt="Notifications" />
+  </button>
+          <button class="icons" aria-label="Добавить">
+    <img src="img/wireframes-icons-6.svg" alt="Add" />
+  </button>
+          <a href="dashboard.html" class="icon-btn avatar-btn" aria-label="Профиль">
+    <img src="img/intersect.svg" alt="Profile avatar" />
+  </a>
         </div>
       </div>
 
       <div class="cover-image">
-        <img src="img\Wireframes - Avatar.svg" alt="avatar" class="avatar">
-        <img src="img\Mask group.svg" alt="Cover" class="cover-svg">
-      </div>
-
+  <img src="img/Mask group.svg" alt="Cover" class="cover-svg">
+  <div class="profile-top-row">
+    <img src="img/Wireframes - Avatar.svg" alt="avatar" class="avatar">
+    <h1 class="profile-title-cover"></h1>
+  </div>
+</div>
+      
       <div class="profile">
-        <h1>Настройки</h1>
-
+        <div class="profile-header">
+          <h1 class="profile-title">Настройки</h1>
+          <div class="profile-actions">
+            <button type="button">Отменить</button>
+            <button type="submit" form="profile-form">Сохранить</button>
+          </div>
+        </div>
+        
         <div class="tabs">
           <button class="active">Мой профиль</button>
           <button>Пароль</button>
           <button>Уведомления</button>
         </div>
 
-        <form id="profile-form">
-          <div class="form-group">
-            <label>Имя</label>
-            <input type="text" name="firstName" placeholder="Имя" />
-          </div>
-          <div class="form-group">
-            <label>Фамилия</label>
-            <input type="text" name="lastName" placeholder="Фамилия" />
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" value="myname@gmail.com" disabled />
+        <div class="tab-content">
+          <div class="tab-pane active" id="tab-profile">
+            <form id="profile-form">
+              <div class="form-group">
+                <label>Имя</label>
+                <input type="text" name="firstName" placeholder="Имя" />
+              </div>
+              <div class="form-group">
+                <label>Фамилия</label>
+                <input type="text" name="lastName" placeholder="Фамилия" />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" value="myname@gmail.com" disabled />
+              </div>
+
+              <div class="form-group file-upload" onclick="document.getElementById('fileInput').click();">
+                Перетащите сюда файл или кликните для выбора (SVG, PNG, JPG)
+                <input type="file" id="fileInput" style="display: none;">
+              </div>
+
+              <div class="form-group role-input">
+                <label for="role">Роль</label>
+                <input type="text" id="role" name="role" placeholder="Введите роль" />
+              </div>
+
+            
+            </form>
           </div>
 
-          <div class="form-group file-upload" onclick="document.getElementById('fileInput').click();">
-            Перетащите сюда файл или кликните для выбора (SVG, PNG, JPG)
-            <input type="file" id="fileInput" style="display: none;">
+          <div class="tab-pane" id="tab-password" style="display: none;">
+            <p>Здесь будет форма смены пароля</p>
           </div>
 
-          <div class="form-actions">
-            <button type="button">Отменить</button>
-            <button type="submit">Сохранить</button>
+          <div class="tab-pane" id="tab-notifications" style="display: none;">
+            <p>Настройки уведомлений</p>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Подключаем JS -->
+  <!-- JS -->
   <script src="dashboard.js"></script>
 </body>
 </html>

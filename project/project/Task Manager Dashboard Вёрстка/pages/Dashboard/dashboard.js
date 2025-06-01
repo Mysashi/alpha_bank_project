@@ -73,6 +73,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  document.addEventListener("DOMContentLoaded", function () {
+    const logoutImg = document.querySelector(".logout-model");
+    if (logoutImg) {
+      logoutImg.addEventListener("click", function () {
+        console.log("Выход выполнен");
+        // window.location.href = "/logout"; // или любая другая логика
+      });
+    }
+  });
+  
+  
+
   // 7. Обработчик для загрузки аватара
   const fileInput = document.getElementById('fileInput');
   if (fileInput) {

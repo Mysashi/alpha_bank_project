@@ -148,42 +148,70 @@
         </div>
     </div>
 
-    <div class="register-container">
-        <h1 class="register-title"></h1>
-        <p class="register-subtitle"></p>
-        <p class="register-subtitle"></p>
-        
-        <div class="divider"></div>
-        
-        <h2 class="register-title">Регистрация</h2>
-        
-        <form>
-            <div class="form-group">
-                <label for="firstName">Имя</label>
-                <input type="text" id="firstName" placeholder="Вводите имя">
-            </div>
-            
-            <div class="form-group">
-                <label for="lastName">Фамилия</label>
-                <input type="text" id="lastName" placeholder="Вводите фамилию">
-            </div>
-            
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="Вводите email">
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Пароль</label>
-                <input type="password" id="password" placeholder="Вводите пароль">
-            </div>
-            
-            <button type="submit" class="register-button">ПРОДОЛЖИТЬ</button>
-            <div class="login-prompt" style="margin-top: 20px; text-align: center; font-size: 14px;">
-                Уже есть аккаунт? 
-                <a href="login.html" style="color: var(--accent-color); text-decoration: none; font-weight: 500;">ВОЙТИ</a>
-            </div>
-        </form>
+    <div class="register-container"> 
+  <h1 class="register-title"></h1>
+  <p class="register-subtitle"></p>
+  <p class="register-subtitle"></p>
+  
+  <div class="divider"></div>
+  
+  <h2 class="register-title">Регистрация</h2>
+  
+  <form id="registerForm">
+    <div class="form-group">
+      <label for="firstName">Имя</label>
+      <input type="text" id="firstName" placeholder="Вводите имя" required />
     </div>
+    
+    <div class="form-group">
+      <label for="lastName">Фамилия</label>
+      <input type="text" id="lastName" placeholder="Вводите фамилию" required />
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Вводите email" required />
+    </div>
+    
+    <div class="form-group">
+      <label for="password">Пароль</label>
+      <input type="password" id="password" placeholder="Вводите пароль" required />
+    </div>
+    
+    <button type="submit" class="register-button">ПРОДОЛЖИТЬ</button>
+    
+    <div class="login-prompt" style="margin-top: 20px; text-align: center; font-size: 14px;">
+      Уже есть аккаунт? 
+      <a href="login.html" style="color: var(--accent-color); text-decoration: none; font-weight: 500;">ВОЙТИ</a>
+    </div>
+  </form>
+  
+  <div id="registerMessage" style="margin-top: 10px; text-align:center;"></div>
+</div>
+
+<script>
+  const email = document.getElementById('email').value.trim();
+const password = document.getElementById('password').value.trim();
+
+const payload = {
+  username: email,
+  password: password
+};
+
+fetch('http://localhost:8080/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload)
+})
+.then(response => response.json())
+.then(data => {
+  // Обработка ответа от сервера
+})
+.catch(error => {
+  console.error('Ошибка:', error);
+});
+
+</script>
+
 </body>
 </html>
