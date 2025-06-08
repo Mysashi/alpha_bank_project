@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Пустой шаблон с боковым меню и шапкой</title>
+  <link rel="stylesheet" href="globals.css" />
+  <link rel="stylesheet" href="styleguide.css" />
+  <link rel="stylesheet" href="tasks.css" />
+  <style>
+    /* Копия стилей для меню и шапки из твоего кода */
+    .section-2 ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+    .section-2 li.has-dropdown {
+      position: relative;
+      cursor: pointer;
+      padding-right: 20px;
+      user-select: none;
+    }
+    .section-2 li.has-dropdown::after {
+      content: "▼";
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      color: #768396;
+      transition: transform 0.3s ease;
+    }
+    .section-2 li.has-dropdown.active::after {
+      transform: translateY(-50%) rotate(180deg);
+    }
+    .section-2 ul.submenu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      margin-top: 8px;
+      padding-left: 16px;
+    }
+    .section-2 li.has-dropdown.active > ul.submenu {
+      max-height: 400px;
+    }
+    .section-2 ul.submenu li {
+      padding: 4px 0;
+      color: #768396;
+      font-family: "Roboto-Regular", Helvetica;
+      font-size: 14px;
+    }
+    .section-2 ul.submenu li:hover {
+      color: #5051f9;
+      cursor: pointer;
+    }
+    .filters-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      font-family: Roboto, sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      color: #232360;
+    }
+    .filters-dropdown-menu {
+      position: absolute;
+      top: 48px;
+      left: 0;
+      background: white;
+      box-shadow: 0 4px 8px rgba(80,81,249,0.1);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      width: 160px;
+      z-index: 100;
+    }
+    .filters-dropdown-menu.active {
+      display: flex;
+    }
+    .dropdown-item {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: Roboto, sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      color: #5051f9;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+    }
+    .dropdown-item:hover {
+      background-color: #f0f1ff;
+    }
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+    .hhhhv .elements {
+      display: none;
+      position: absolute;
+      width: 31px;
+      height: 31px;
+      top: 189px;
+      left: 28px;
+      background-color: #5051f9;
+      border-radius: 10px;
+    }
+    .stat-chart {
+      position: relative;
+      height: 100px;
+      margin-top: 10px;
+    }
+
+    .create-team-form {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      margin-top: 20px;
+      display: none; /* По умолчанию скрыта */
+    }
+    .create-team-form input, .create-team-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .create-team-form button {
+      padding: 10px 20px;
+      background: #5051f9;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .create-team-form button:hover {
+      background: #4042c0;
+    }
+
+
+/* Контейнер для команд */
+#teamsList {
+  display: flex;
+  flex-wrap: wrap; /* Это обеспечит перенос карточек на новую строку */
+  gap: 20px; /* Отступы между карточками */
+  width: 100%;
+}
+
+/* Стили для карточки команды */
+.team-card {
+  flex: 0 1 calc(33.333% - 20px);  /* Каждая карточка будет занимать 1/3 ширины */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  cursor: pointer;
+  margin-bottom: 20px; /* Отступ снизу */
+}
+
+/* Медиазапрос для экранов шириной меньше 1024px */
+@media (max-width: 1024px) {
+  .team-card {
+    flex: 0 1 calc(50% - 20px); /* Две карточки на строку */
+  }
+}
+
+/* Медиазапрос для экранов шириной меньше 600px */
+@media (max-width: 600px) {
+  .team-card {
+    flex: 0 1 100%; /* Одна карточка на строку */
+  }
+}
+
+
+  </style>
+  <!-- Подключаем Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="hhhhv">
+    <div class="overlap-wrapper">
+      <div class="overlap">
+        <div class="overlap-group">
+          <!-- Шапка и боковое меню -->
+          <div class="frame">
+            <div class="menu">
+              <img class="img" src="img/Wireframes - Icons.svg" alt="Icon" />
+              <div class="home">ВЫЙТИ</div>
+            </div>
+          </div>
+          <div class="wireframes-logo">
+            <img class="img" src="img/calendar-outline.svg" alt="Calendar" />
+            <div class="planit">TASKFLOW</div>
+          </div>
+          <div class="elements">
+            <img class="vector" src="img/vector-17.svg" alt="Vector" />
+            <img class="vector-2" src="img/vector-6.svg" alt="Vector" />
+            <img class="vector-3" src="img/vector-18.svg" alt="Vector" />
+            <img class="vector-4" src="img/vector-14.svg" alt="Vector" />
+          </div>
+          <div class="side-menu">
+            <div class="section">
+              <div class="frame-2">
+                <div class="menu">
+                  <img class="img" src="img/Wireframes - Icons122.svg" alt="Icon" />
+                  <div class="home">ГЛАВНАЯ</div>
+                </div>
+              </div>
+              <div class="frame-2">
+                <a href="calendar.html" style="text-decoration:none;color:inherit;display:flex;">
+                  <div class="menu">
+                    <img class="img" src="img/wireframes-icons-8.svg" />
+                    <div class="home">КАЛЕНДАРЬ</div>
+                  </div>
+                </a>
+              </div>
+              <div class="frame-2">
+                <a href="tasks.html" style="text-decoration:none;color:inherit;display:flex;">
+                  <div class="menu">
+                    <img class="img" src="img/elements.svg" />
+                    <div class="home">ТАБЛИЦА</div>
+                  </div>
+                </a>
+              </div>
+              <div class="section-2">
+                <ul>
+                  <li class="has-dropdown">
+                    <div class="menu">
+                      <img class="img" src="img/wireframes-icons-3.svg" alt="Icon" />
+                      <div class="home">КОМАНДЫ</div>
+                    </div>
+                    <ul class="submenu">
+                      <li><a href="team_1.html"><img src="img/Frame 1000004546222.svg" alt="Команда1" class="menu-icon" /></a></li>
+                      <li><a href="team_2.html"><img src="img/Frame 1000004547222.svg" alt="Команда2" class="menu-icon" /></a></li>
+                      <li><a href="team_3.html"><img src="img/Frame 1000004548222.svg" alt="Команда3" class="menu-icon" /></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="row">
+              <div class="wireframes-input">
+                <div class="actions-UI-search">
+                  <img class="union" src="img/union.svg" alt="Search" />
+                </div>
+                <input type="text" class="search-input" placeholder="Поиск" />
+              </div>
+              <img class="wireframes-icons-2" src="img/wireframes-icons-2.svg" alt="Icon" />
+              <img class="wireframes-icons-2" src="img/wireframes-icons-6.svg" alt="Icon" />
+              <a href="dashboard.html" class="wireframes-avatar">
+                <img class="intersect" src="img/intersect.svg" alt="User" />
+              </a>
+            </div>
+          </div>
+
+          <!-- Основная часть -->
+          <div class="main">
+            <header class="header">
+              <!-- шапка (таблица/календарь, фильтры, добавить) -->
+            </header>
+
+            <!-- Верхняя статистика -->
+            <div class="stats-row" style="display:flex; gap:20px; margin:20px 0;">
+              <div class="stat-card">
+                <div class="stat-header">
+                  <img src="img/star.svg" alt="" class="icon"/>
+                  <div class="stat-title">Завершенные задачи</div>
+                  <div class="stat-value">5</div>
+                </div>
+                <div class="stat-chart">
+                  <canvas id="throughputChart" style="width:100%;height:100px;"></canvas>
+                </div>
+                <div class="stat-footer">
+                  <span>На <strong>3</strong> больше чем на прошлой неделе</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <img src="img/document.svg" alt="" class="icon"/>
+                  <div class="stat-title">Новые задачи</div>
+                  <div class="stat-value">6</div>
+                </div>
+                <div class="stat-chart">
+                  <canvas id="leadTimeChart" style="width:100%;height:100px;"></canvas>
+                </div>
+                <div class="stat-footer">
+                  <span>На <strong>3</strong> больше чем на прошлой неделе</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <img src="img/document.svg" alt="" class="icon"/>
+                  <div class="stat-title">Завершенные проекты</div>
+                  <div class="stat-value">1</div>
+                </div>
+                <div class="stat-chart">
+                  <canvas id="cycleTimeChart" style="width:100%;height:100px;"></canvas>
+                </div>
+                <div class="stat-footer">
+                  <span>На <strong>1</strong> больше чем в прошлом месяце</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Нижняя область: задачи и уведомления -->
+            <div class="bottom-row" style="display:flex; gap:20px;">
+              <!-- Колонка задач -->
+              <div class="tasks-deadline" style="flex:2; background:#fff; border-radius:12px; padding:20px; box-shadow:0 4px 8px rgba(0,0,0,0.05);">
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                  <h2>Задачи с приближающимимся дедлайном</h2>
+                  <button id="addTaskBtn" class="filters-button">
+                    <img src="img/wireframes-icons1.svg" alt="" class="icon"/>
+                  </button>
+                </div>
+                <ul id="deadlineList" style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;">
+                  <li style="display:flex; align-items:flex-start; gap:12px;">
+                    <input type="checkbox" style="margin-top:4px;" />
+                    <div style="flex:1;">
+                      <span class="tag-orange" style="background:#ff9f43; color:#fff; padding:2px 6px; border-radius:6px; font-size:12px;"># тег</span>
+                      <span style="margin-left:8px; font-weight:500;">Имя задачи</span>
+                      <div style="font-size:12px; color:#768396; margin-top:4px; display:flex; align-items:center; gap:4px;">
+                        <img src="img/calendar.svg" alt="" class="icon" style="width:14px;height:14px;"/> Mar 10 — Mar 20
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Колонка уведомлений -->
+              <div class="notifications" style="flex:1; background:#fff; border-radius:12px; padding:20px; box-shadow:0 4px 8px rgba(0,0,0,0.05);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                  <h2>Уведомления</h2>
+                  <button class="filters-button" style="font-size:14px; color:#5051f9; background:none; border:none;">
+                    Отметить все прочитанным
+                  </button>
+                </div>
+                <ul style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;">
+                  <li style="display:flex; align-items:flex-start; gap:12px;">
+                    <img src="img/check-circle.svg" alt="" class="icon" style="margin-top:4px;"/>
+                    <div>
+                      <div style="font-weight:500;">Задача выполнена</div>
+                      <div style="font-size:14px; color:#768396;">Вы выполнили задачу <span style="color:#5051f9;">Имя задачи</span></div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="teams-section" style="margin-top: 40px; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2>Мои команды</h2>
+                 <button class="filters-button" style="font-size: 16px;" id="createTeamBtn">
+              <img src="img/wireframes-icons1.svg" alt="" class="icon" />
+            </button>
+             <!-- Форма для создания новой команды -->
+            <div class="create-team-form" id="createTeamForm">
+              <h3>Создать новую команду</h3>
+              <input type="text" id="teamName" placeholder="Название команды" />
+              <textarea id="teamDescription" placeholder="Описание команды"></textarea>
+              <input type="text" id="teamMembers" placeholder="Добавить участников (через запятую)" />
+              <button id="submitTeamBtn">Создать команду</button>
+            </div>
+            <div id="teamsList" style="display: flex; gap: 20px;"></div>
+                  <div style="margin-left: auto; cursor: pointer;">⋮</div>
+             
+
+          </div> <!-- конец .main -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Выпадающее меню "Команды"
+    document.querySelectorAll(".section-2 li.has-dropdown").forEach(item => {
+      item.addEventListener("click", e => {
+        if (e.target.closest(".submenu")) return;
+        item.classList.toggle("active");
+        document.querySelectorAll(".section-2 li.has-dropdown").forEach(other => {
+          if (other !== item && other.classList.contains("active")) {
+            other.classList.remove("active");
+          }
+        });
+      });
+    });
+
+    // Выпадающее меню "Фильтры"
+    const filtersBtn = document.getElementById('filtersBtn');
+    const filtersDropdown = document.getElementById('filtersDropdown');
+    if (filtersBtn) {
+      filtersBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        filtersDropdown.classList.toggle('active');
+      });
+    }
+    window.addEventListener('click', () => {
+      document.querySelectorAll('.filters-dropdown-menu.active')
+              .forEach(menu => menu.classList.remove('active'));
+    });
+
+    // Добавление задачи в блок дедлайнов
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const deadlineList = document.getElementById('deadlineList');
+
+    addTaskBtn.addEventListener('click', () => {
+      const name  = prompt('Введите название задачи:', 'Новая задача');
+      if (!name) return;
+
+      const tag   = prompt('Введите тег (без #):', 'тег');
+      if (!tag) return;
+
+      const start = prompt('Дата начала (например, Mar 10):', 'Mar 10');
+      const end   = prompt('Дата окончания (например, Mar 20):', 'Mar 20');
+
+      // Запрос цвета тега у пользователя, с дефолтным оранжевым цветом
+      const color = prompt('Введите цвет тега (например, #ff9f43 или red):', '#ff9f43');
+      if (!color) return;
+
+      createDeadlineTask({ name, tag, start, end, color });
+    });
+    function createDeadlineTask({ name, tag, start, end, color }) {
+      const li = document.createElement('li');
+      li.style.display    = 'flex';
+      li.style.alignItems = 'flex-start';
+      li.style.gap        = '12px';
+      li.innerHTML = `
+        <input type="checkbox" style="margin-top:4px;" />
+        <div style="flex:1;">
+          <span style="
+            background: ${color};
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 12px;
+          ">#${tag}</span>
+          <span style="margin-left:8px; font-weight:500;">${name}</span>
+          <div style="
+            font-size:12px;
+            color:#768396;
+            margin-top:4px;
+            display:flex;
+            align-items:center;
+            gap:4px;
+          ">
+            <img src="img/calendar.svg" class="icon" style="width:14px;height:14px;" alt=""/>
+            ${start} — ${end}
+          </div>
+        </div>
+      `;
+      deadlineList.prepend(li);
+    }
+
+    // Инициализация графиков Chart.js
+    document.addEventListener('DOMContentLoaded', () => {
+      // Throughput - столбчатый график
+      const throughputCtx = document.getElementById('throughputChart').getContext('2d');
+      new Chart(throughputCtx, {
+        type: 'bar',
+        data: {
+          labels: ['17.02', '24.02', '03.03', '10.03', '17.03', '24.03'],
+          datasets: [{
+            label: 'Throughput',
+            data: [1, 4, 2, 5, 3, 3],
+            backgroundColor: 'rgba(0, 128, 255, 0.7)'
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true } },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Lead Time - линейный график
+      const leadTimeCtx = document.getElementById('leadTimeChart').getContext('2d');
+      new Chart(leadTimeCtx, {
+        type: 'line',
+        data: {
+          labels: ['17.02', '24.02', '03.03', '10.03', '17.03', '24.03'],
+          datasets: [{
+            label: 'Lead Time (дней)',
+            data: [6, 3, 9, 6, 9, 5],
+            borderColor: 'rgba(0, 92, 255, 0.8)',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true } },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Cycle Time - линейный график
+      const cycleTimeCtx = document.getElementById('cycleTimeChart').getContext('2d');
+      new Chart(cycleTimeCtx, {
+        type: 'line',
+        data: {
+          labels: ['17.02', '24.02', '03.03', '10.03', '17.03', '24.03'],
+          datasets: [{
+            label: 'Cycle Time (дней)',
+            data: [6, 7, 4, 8, 9, 4],
+            borderColor: 'rgba(0, 162, 255, 0.8)',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true } },
+          plugins: { legend: { display: false } }
+        }
+      });
+    });
+
+  
+
+document.getElementById('submitTeamBtn').addEventListener('click', function() {
+  const teamName = document.getElementById('teamName').value;
+  const teamDescription = document.getElementById('teamDescription').value;
+  const teamMembers = document.getElementById('teamMembers').value.split(',');
+
+  if (teamName && teamDescription) {
+    const teamList = document.getElementById('teamsList');
+    const teamId = generateUniqueId();  // Генерация уникального ID для команды
+
+    // Ссылка на страницу с деталями команды
+    const teamLink = `/pages/Dashboard/team-dashboard.html?teamId=${teamId}`;
+
+    const teamCard = document.createElement('div');
+    teamCard.classList.add('team-card');
+    teamCard.style = 'flex: 0 1 calc(33.333% - 20px); display: flex; align-items: center; gap: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border-radius: 12px; padding: 12px 16px;';
+
+    // Ссылка будет вставлена в карточку команды
+    teamCard.innerHTML = `
+      <a href="${teamLink}" style="width: 100%; text-decoration: none; color: inherit;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #c4c4c4;"></div>
+        <div>
+          <div style="font-weight: 600;">${teamName}</div>
+          <div style="font-size: 14px; color: #666; display: flex; align-items: center; gap: 4px;">
+            <img src="img/user-icon.svg" alt="Участники" style="width: 14px; height: 14px;" />
+            ${teamMembers.length} участников
+          </div>
+        </div>
+        <div style="margin-left: auto; cursor: pointer;">⋮</div>
+      </a>
+    `;
+
+    // Добавление карточки в список команд
+    teamList.appendChild(teamCard);
+
+    // Очистка формы после добавления команды
+    document.getElementById('teamName').value = '';
+    document.getElementById('teamDescription').value = '';
+    document.getElementById('teamMembers').value = '';
+
+    // Скрыть форму после добавления команды
+    document.getElementById('createTeamForm').style.display = 'none';
+  } else {
+    alert('Пожалуйста, заполните все поля.');
+  }
+});
+
+// Генерация уникального ID для команды
+function generateUniqueId() {
+  return 'team-' + Math.floor(Math.random() * 10000);  // Генерация случайного ID (например, 'team-5362')
+}
+
+    // Показать форму создания команды при нажатии на кнопку
+    document.getElementById('createTeamBtn').addEventListener('click', function() {
+      document.getElementById('createTeamForm').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
