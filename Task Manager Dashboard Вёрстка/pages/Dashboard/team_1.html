@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Дашборд команды</title>
+  <link rel="stylesheet" href="globals.css" />
+  <link rel="stylesheet" href="styleguide.css" />
+  <link rel="stylesheet" href="tasks.css" />
+  <style>
+    .section-2 ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+    .section-2 li.has-dropdown {
+      position: relative;
+      cursor: pointer;
+      padding-right: 20px;
+      user-select: none;
+    }
+    .section-2 li.has-dropdown::after {
+      content: "▼";
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      color: #768396;
+      transition: transform 0.3s ease;
+    }
+    .section-2 li.has-dropdown.active::after {
+      transform: translateY(-50%) rotate(180deg);
+    }
+    .section-2 ul.submenu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      margin-top: 8px;
+      padding-left: 16px;
+    }
+    .section-2 li.has-dropdown.active > ul.submenu {
+      max-height: 400px;
+    }
+    .section-2 ul.submenu li {
+      padding: 4px 0;
+      color: #768396;
+      font-family: "Roboto-Regular", Helvetica;
+      font-size: 14px;
+    }
+    .section-2 ul.submenu li:hover {
+      color: #5051f9;
+      cursor: pointer;
+    }
+    .filters-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      font-family: Roboto, sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      color: #232360;
+    }
+    .filters-dropdown-menu {
+      position: absolute;
+      top: 48px;
+      left: 0;
+      background: white;
+      box-shadow: 0 4px 8px rgba(80,81,249,0.1);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      width: 160px;
+      z-index: 100;
+    }
+    .filters-dropdown-menu.active {
+      display: flex;
+    }
+    .dropdown-item {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: Roboto, sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      color: #5051f9;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+    }
+    .dropdown-item:hover {
+      background-color: #f0f1ff;
+    }
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+    .stats-cards {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 20px;
+      flex: 1;
+      min-width: 120px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Roboto, sans-serif;
+      color: #1B1D3A;
+      font-weight: 600;
+    }
+    .stat-card .value {
+      font-size: 20px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    .charts-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .chart-container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      flex: 1 1 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .chart-container h3 {
+      margin-bottom: 12px;
+      font-weight: 700;
+      color: #1B1D3A;
+      font-family: Roboto, sans-serif;
+    }
+    /* Donut chart style */
+    #defectRateChart {
+      max-width: 200px;
+      margin: 0 auto;
+    }
+    /* Sidebar adjustments */
+    .side-menu .menu .home {
+      font-weight: 200;
+      color: #1B1D3A;
+    }
+    .team-members {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
+      color: #666;
+    }
+    .team-member-icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+    }
+    .team-header {
+      font-weight: 700;
+      font-family: Roboto, sans-serif;
+      margin-bottom: 16px;
+      color: #1B1D3A;
+    }
+
+     .period-selector {
+    position: relative;
+    display: inline-block;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    user-select: none;
+  }
+  .period-button {
+    cursor: pointer;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #1b1d3a;
+  }
+  .period-button:hover {
+    background-color: #f0f0ff;
+  }
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 240px;
+    padding: 16px;
+    z-index: 1000;
+    display: none;
+  }
+  .dropdown.active {
+    display: block;
+  }
+  .dropdown h4 {
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    font-size: 16px;
+    color: #1b1d3a;
+  }
+  .radio-group {
+    margin-bottom: 12px;
+  }
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    color: #5051f9;
+  }
+  .calendar {
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+    color: #666;
+    font-size: 13px;
+  }
+  /* Простая имитация календаря */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .calendar-grid div {
+    text-align: center;
+    padding: 6px 0;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .calendar-grid .selected {
+    background-color: #5051f9;
+    color: white;
+  }
+  .calendar-grid .disabled {
+    color: #ccc;
+    cursor: default;
+  }
+  .hhhhv .elements {
+      display: none;
+  position: absolute;
+  width: 31px;
+  height: 31px;
+  top: 189px;
+  left: 28px;
+  background-color: #5051f9;
+  border-radius: 10px;
+}
+ 
+  
+  </style>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="hhhhv">
+    <div class="overlap-wrapper">
+      <div class="overlap">
+        <div class="overlap-group">
+          <!-- Шапка и боковое меню -->
+          <div class="frame">
+            <div class="menu">
+              <img class="img" src="img/Wireframes - Icons.svg" alt="Icon" />
+              <div class="home">ВЫЙТИ</div>
+            </div>
+          </div>
+          <div class="wireframes-logo">
+            <img class="img" src="img/calendar-outline.svg" alt="Calendar" />
+            <div class="planit">TASKFLOW</div>
+          </div>
+          <div class="elements">
+            <img class="vector" src="img/vector-17.svg" alt="Vector" />
+            <img class="vector-2" src="img/vector-6.svg" alt="Vector" />
+            <img class="vector-3" src="img/vector-18.svg" alt="Vector" />
+            <img class="vector-4" src="img/vector-14.svg" alt="Vector" />
+          </div>
+          <div class="side-menu">
+            <div class="section">
+              <div class="frame-2">
+                <a href="Main.html" style="text-decoration: none; color: inherit;">
+                  <div class="menu">
+                    <img class="img" src="img/wireframes - icons - 4.svg" alt="Icon" />
+                    <div class="home">ГЛАВНАЯ</div>
+                  </div>
+                </a>
+              </div>
+              <div class="frame-2">
+                <a href="calendar.html" style="text-decoration: none; color: inherit; display: flex;">
+                  <div class="menu">
+                    <img class="img" src="img/wireframes-icons-8.svg" />
+                    <div class="home">КАЛЕНДАРЬ</div>
+                  </div>
+                </a>
+              </div>
+              <div class="frame-2">
+                <a href="tasks.html" style="text-decoration: none; color: inherit; display: flex;">
+                  <div class="menu">
+                    <img class="img" src="img/elements.svg" />
+                    <div class="home">ТАБЛИЦА</div>
+                  </div>
+                </a>
+              </div>
+              <div class="section-2">
+                <ul>
+                  <li class="has-dropdown">
+                    <div class="menu">
+                      <img class="img" src="img/wireframes-icons-3.svg" alt="Icon" />
+                      <div class="home">КОМАНДЫ</div>
+                    </div>
+                    <ul class="submenu"> 
+                      <li><a href="team_1.html"><img src="img/menu001.svg" alt="Команда1" class="menu-icon" /></a></li>
+                      <li><a href="team_2.html"><img src="img/Frame 1000004547222.svg" alt="Команда2" class="menu-icon" /></a></li>
+                      <li><a href="team_3.html"><img src="img/Frame 1000004548222.svg" alt="Команда3" class="menu-icon" /></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="row">
+              <div class="wireframes-input">
+                <div class="actions-UI-search">
+                  <img class="union" src="img/union.svg" alt="Search" />
+                </div>
+                <input type="text" class="search-input" placeholder="Поиск" />
+              </div>
+              <img class="wireframes-icons-2" src="img/wireframes-icons-2.svg" alt="Icon" />
+              <img class="wireframes-icons-2" src="img/wireframes-icons-6.svg" alt="Icon" />
+              <a href="dashboard.html" class="wireframes-avatar">
+                <img class="intersect" src="img/intersect.svg" alt="User" />
+              </a>
+            </div>
+          </div>
+
+          <!-- Основная часть -->
+          <div class="main" style="padding: 20px;">
+            <!-- Заголовок -->
+            <h1 style="font-family: Roboto, sans-serif; color: #1B1D3A; margin-bottom: 20px;">Команда 1</h1>
+
+            <!-- Основные показатели -->
+             <div class="period-selector" id="periodSelector">
+  <div class="period-button" id="periodButton">
+    <span id="periodLabel">Последние 7 дней</span>
+    <img src="img/arrow-down.svg" alt="▼" style="width:12px; height:12px;" />
+  </div>
+  <div class="dropdown" id="periodDropdown">
+    <h4>Период</h4>
+    <div class="radio-group">
+      <label><input type="radio" name="period" value="7" checked /> Последние 7 дней</label>
+      <label><input type="radio" name="period" value="30" /> Последние 30 дней</label>
+      <label><input type="radio" name="period" value="custom" /> Выбрать период</label>
+    </div>
+    <div class="calendar" id="calendar" style="display:none;">
+      <div>ПН ВТ СР ЧТ ПТ СБ ВС</div>
+      <div class="calendar-grid" id="calendarGrid">
+        <!-- Дни месяца заполняются JS -->
+      </div>
+      <div style="margin-top: 12px; display: flex; justify-content: space-between;">
+        <button id="prevMonthBtn">&lt;</button>
+        <div id="monthYearLabel">Март 2025</div>
+        <button id="nextMonthBtn">&gt;</button>
+      </div>
+    </div>
+  </div>
+</div>
+            <div class="stats-cards">
+              <div class="stat-card" style="background:#FFF6DB; color:#C28800;">
+                <div>WIP</div>
+                <div class="value">5 задач</div>
+              </div>
+              <div class="stat-card" style="background:#E4F1FF; color:#1969FF;">
+                <div>Lead Time</div>
+                <div class="value">5 дней</div>
+              </div>
+              <div class="stat-card" style="background:#E3F7FF; color:#23A4FF;">
+                <div>Cycle Time</div>
+                <div class="value">4 дня</div>
+              </div>
+              <div class="stat-card" style="background:#DBFFD8; color:#27AE60;">
+                <div>Throughput</div>
+                <div class="value">3 задачи</div>
+              </div>
+              <div class="stat-card" style="background:#FFD9E1; color:#FF6384;">
+                <div>Defect Rate</div>
+                <div class="value">15 %</div>
+              </div>
+            </div>
+
+            <!-- Графики -->
+            <div class="charts-row">
+              <div class="chart-container">
+                <h3>Throughput</h3>
+                <canvas id="throughputChart" width="400" height="200"></canvas>
+              </div>
+              <div class="chart-container">
+                <h3>Lead Time</h3>
+                <canvas id="leadTimeChart" width="400" height="200"></canvas>
+              </div>
+              <div class="chart-container">
+                <h3>Cycle Time</h3>
+                <canvas id="cycleTimeChart" width="400" height="200"></canvas>
+              </div>
+              <div class="chart-container" style="max-width: 300px;">
+                <h3>Defect Rate</h3>
+                <canvas id="defectRateChart" width="300" height="300"></canvas>
+              </div>
+            </div>
+          </div> <!-- конец .main -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Выпадающее меню "Команды"
+    document.querySelectorAll(".section-2 li.has-dropdown").forEach(item => {
+      item.addEventListener("click", e => {
+        if (e.target.closest(".submenu")) return;
+        item.classList.toggle("active");
+        document.querySelectorAll(".section-2 li.has-dropdown").forEach(other => {
+          if (other !== item && other.classList.contains("active")) {
+            other.classList.remove("active");
+          }
+        });
+      });
+    });
+
+    // Выпадающее меню "Фильтры"
+    const filtersBtn = document.getElementById('filtersBtn');
+    const filtersDropdown = document.getElementById('filtersDropdown');
+
+    if (filtersBtn) {
+      filtersBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        filtersDropdown.classList.toggle('active');
+      });
+    }
+    window.addEventListener('click', () => {
+      document.querySelectorAll('.filters-dropdown-menu.active')
+              .forEach(menu => menu.classList.remove('active'));
+    });
+
+    // Инициализация графиков Chart.js
+    document.addEventListener('DOMContentLoaded', () => {
+      // Throughput - столбчатый график
+      const throughputCtx = document.getElementById('throughputChart').getContext('2d');
+      new Chart(throughputCtx, {
+        type: 'bar',
+        data: {
+          labels: ['17.02', '24.02', '03.03', '10.03', '17.03', '24.03'],
+          datasets: [{
+            label: 'Throughput',
+            data: [1, 4, 2, 5, 3, 3],
+            backgroundColor: 'rgba(0, 128, 255, 0.7)'
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true, stepSize: 1 } },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Lead Time - линейный график
+      const leadTimeCtx = document.getElementById('leadTimeChart').getContext('2d');
+      new Chart(leadTimeCtx, {
+        type: 'line',
+        data: {
+          labels: ['17.02', '24.02', '03.03', '10.03', '17.03', '24.03'],
+          datasets: [{
+            label: 'Lead Time (дней)',
+            data: [6, 3, 9, 6, 9, 5],
+            borderColor: 'rgba(0, 92, 255, 0.8)',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true, stepSize: 1 } },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Cycle Time - линейный график
+      const cycleTimeCtx = document.getElementById('cycleTimeChart').getContext('2d');
+      new Chart(cycleTimeCtx, {
+        type: 'line',
+        data: {
+          labels: ['17.02', '24.02', '03.03', '10.03', '17.03', '24.03'],
+          datasets: [{
+            label: 'Cycle Time (дней)',
+            data: [6, 7, 4, 8, 9, 4],
+            borderColor: 'rgba(0, 162, 255, 0.8)',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true, stepSize: 1 } },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Defect Rate - кольцевой график
+      const defectRateCtx = document.getElementById('defectRateChart').getContext('2d');
+      new Chart(defectRateCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Defect', 'Good'],
+          datasets: [{
+            data: [15, 85],
+            backgroundColor: ['#FF6384', '#D3D3D3'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '75%',
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+            datalabels: {
+              display: true,
+              formatter: (value, ctx) => {
+                if (ctx.dataIndex === 0) {
+                  return '15%';
+                }
+                return '';
+              },
+              color: '#FF6384',
+              font: { weight: 'bold', size: 20 }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    });
+
+      const periodSelector = document.getElementById('periodSelector');
+  const periodButton = document.getElementById('periodButton');
+  const periodDropdown = document.getElementById('periodDropdown');
+  const periodLabel = document.getElementById('periodLabel');
+  const calendar = document.getElementById('calendar');
+  const calendarGrid = document.getElementById('calendarGrid');
+  const prevMonthBtn = document.getElementById('prevMonthBtn');
+  const nextMonthBtn = document.getElementById('nextMonthBtn');
+  const monthYearLabel = document.getElementById('monthYearLabel');
+
+  let currentDate = new Date(2025, 2); // Март 2025 (месяц 0-based)
+  let selectedStart = null;
+  let selectedEnd = null;
+
+  function renderCalendar(date) {
+    calendarGrid.innerHTML = '';
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    monthYearLabel.textContent = date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const firstWeekDay = firstDay.getDay() === 0 ? 7 : firstDay.getDay();
+
+    // Добавить пустые клетки перед 1 числом
+    for (let i = 1; i < firstWeekDay; i++) {
+      const emptyCell = document.createElement('div');
+      emptyCell.classList.add('disabled');
+      calendarGrid.appendChild(emptyCell);
+    }
+
+    // Добавить числа месяца
+    for(let day=1; day <= lastDay.getDate(); day++) {
+      const dayCell = document.createElement('div');
+      dayCell.textContent = day;
+
+      // Пометить выбранные даты
+      if (selectedStart && selectedEnd) {
+        const d = new Date(year, month, day);
+        if (d >= selectedStart && d <= selectedEnd) {
+          dayCell.classList.add('selected');
+        }
+      }
+
+      dayCell.addEventListener('click', () => {
+        if (!selectedStart || (selectedStart && selectedEnd)) {
+          selectedStart = new Date(year, month, day);
+          selectedEnd = null;
+        } else if (selectedStart && !selectedEnd) {
+          const clickedDate = new Date(year, month, day);
+          if (clickedDate < selectedStart) {
+            selectedEnd = selectedStart;
+            selectedStart = clickedDate;
+          } else {
+            selectedEnd = clickedDate;
+          }
+        }
+        renderCalendar(currentDate);
+      });
+      calendarGrid.appendChild(dayCell);
+    }
+  }
+
+  periodButton.addEventListener('click', () => {
+    periodDropdown.classList.toggle('active');
+  });
+
+  window.addEventListener('click', e => {
+    if (!periodSelector.contains(e.target)) {
+      periodDropdown.classList.remove('active');
+      calendar.style.display = 'none';
+      // сброс выделения custom, если закрывается
+      document.querySelector('input[name="period"][value="7"]').checked = true;
+      periodLabel.textContent = 'Последние 7 дней';
+    }
+  });
+
+  document.querySelectorAll('input[name="period"]').forEach(radio => {
+    radio.addEventListener('change', e => {
+      if (e.target.value === 'custom') {
+        calendar.style.display = 'block';
+      } else {
+        calendar.style.display = 'none';
+        let labelText = e.target.nextSibling.textContent.trim();
+        periodLabel.textContent = labelText;
+      }
+    });
+  });
+
+  prevMonthBtn.addEventListener('click', () => {
+    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
+    renderCalendar(currentDate);
+  });
+  nextMonthBtn.addEventListener('click', () => {
+    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
+    renderCalendar(currentDate);
+  });
+
+  renderCalendar(currentDate);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</body>
+</html>
