@@ -22,7 +22,7 @@ public class TaskController {
     TaskService taskService;
 
 
-    @GetMapping("{boardId}")
+    @GetMapping("/board/{boardId}")
     public ResponseEntity<?> getTasksByBoardId(@PathVariable Long boardId) {
         try {
             List<Ticket> tasks = taskService.getTasksByBoardId(boardId);

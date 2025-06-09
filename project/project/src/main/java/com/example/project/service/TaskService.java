@@ -39,7 +39,7 @@ public class TaskService {
     }
 
     public Ticket getTaskById(Long taskId) {
-        return null;
+        return ticketRepository.findById(taskId).get();
     }
 
     public Ticket updateTask(Long taskId, @Valid Ticket updateTaskRequest) {
