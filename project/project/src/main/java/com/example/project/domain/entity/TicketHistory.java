@@ -12,9 +12,7 @@ public class TicketHistory {
     private String columnTo;
 
 
-    @ManyToOne
-    @JoinColumn(name = "card_id")
-    private Ticket ticket;
+
 
     public Long getHistTicketId() {
         return histTicketId;
@@ -49,11 +47,5 @@ public class TicketHistory {
     }
 
 
-    public Ticket getTicket() {
-        return ticket;
-    }
 
-    public void setTicket(Ticket ticket) {
-        this.ticket = ticket;
-    }
 }

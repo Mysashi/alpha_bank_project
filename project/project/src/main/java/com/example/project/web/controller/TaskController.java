@@ -35,11 +35,11 @@ public class TaskController {
     }
 
     // Create a task for a project
-    @PostMapping("projects/{projectId}/boards/{boardId}/tasks")
-    public ResponseEntity<?> createTask(@PathVariable Long boardId, @PathVariable Long projectId, @Valid @RequestBody Ticket taskReq) {
+    @PostMapping("{boardId}")
+    public ResponseEntity<?> createTask(@PathVariable Long boardId, @Valid @RequestBody Ticket taskReq) {
         try {
             System.out.println(boardId);
-            Ticket task = taskService.createTask(boardId, projectId, taskReq);
+            Ticket task = taskService.createTask(boardId, taskReq);
             return new ResponseEntity<>(task, HttpStatus.CREATED);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -51,10 +51,16 @@ public class TaskController {
         }
     }
 
-    @GetMapping("projects/{projectId}/board/{boardId}/tasks/{taskId}")
-    public ResponseEntity<?> getTaskById(@PathVariable Long boardId, @PathVariable Long projectId, @PathVariable Long taskId) {
+    @DeleteMapping("{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable Long taskId) {
+        Ticket task = taskService.deleteTask(taskId);
+        return  new ResponseEntity<>(task, HttpStatus.OK);
+    }
+
+    @GetMapping("{taskId}")
+    public ResponseEntity<?> getTaskById( @PathVariable Long taskId) {
         try {
-            Task task = taskService.getTaskById(taskId);
+            Ticket task = taskService.getTaskById(taskId);
             return ResponseEntity.ok(task);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -63,10 +69,10 @@ public class TaskController {
         }
     }
 
-    @PatchMapping("projects/{projectId}/board/{boardId}/tasks/{taskId}")
-    public ResponseEntity<?> updateTask(@PathVariable Long taskId,  @PathVariable Long projectId, @Valid @RequestBody Task taskReq) {
+    @PatchMapping("{taskId}")
+    public ResponseEntity<?> updateTask(@PathVariable Long taskId, @Valid @RequestBody Ticket taskReq) {
         try {
-            Task task = taskService.updateTask(taskId, taskReq);
+            Ticket task = taskService.updateTask(taskId, taskReq);
             return ResponseEntity.ok(task);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

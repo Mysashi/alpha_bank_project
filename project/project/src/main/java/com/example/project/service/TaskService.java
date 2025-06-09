@@ -3,7 +3,6 @@ package com.example.project.service;
 
 import com.example.project.domain.entity.Board;
 import com.example.project.domain.entity.Ticket;
-import com.example.project.domain.entity.TicketStatuses;
 import com.example.project.domain.repository.BoardRepository;
 import com.example.project.domain.repository.TicketRepository;
 import jakarta.validation.Valid;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -29,24 +29,38 @@ public class TaskService {
     @Autowired
     public BoardRepository boardRepository;
 
-    public Ticket createTask(Long boardId, Long projectId, @Valid Ticket createTaskRequest) {
+    public Ticket createTask(Long boardId,@Valid Ticket createTaskRequest) {
         Board board = boardRepository.findById(boardId).get();
         System.out.println(board.getBoardId());
         createTaskRequest.setBoard(board);
+        createTaskRequest.setCreatedAt(LocalDateTime.now().toString());
         ticketRepository.save(createTaskRequest);
         return createTaskRequest;
     }
 
-    public Task getTaskById(Long taskId) {
+    public Ticket getTaskById(Long taskId) {
         return null;
     }
 
-    public Task updateTask(Long taskId, @Valid Task updateTaskRequest) {
+    public Ticket updateTask(Long taskId, @Valid Ticket updateTaskRequest) {
+        Optional<Ticket> optionalTask = ticketRepository.findById(taskId);
+        if (optionalTask.isPresent()) {
+            Ticket task = optionalTask.get();
+            task.setTicketType(updateTaskRequest.getTicketType());
+            task.setName(updateTaskRequest.getName());
+            task.setDescription(updateTaskRequest.getDescription());
+
+            return ticketRepository.save(task);
+        }
         return null;
+
+
     }
 
-    public void deleteTask(Long taskId) {
-
+    public Ticket deleteTask(Long taskId) {
+        Ticket ticket = ticketRepository.findById(taskId).get();
+        ticketRepository.delete(ticket);
+        return null;
     }
 
     public List<Task> getTasksByFilter(String status, String priority, Long projectId) {

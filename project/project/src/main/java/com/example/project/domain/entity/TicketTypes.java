@@ -13,8 +13,6 @@ public class TicketTypes {
     private String color;
 
 
-    @OneToMany(mappedBy = "ticketType")
-    private List<Ticket> tickets;
 
     public Long getTicketTypeId() {
         return Id;
@@ -40,12 +38,5 @@ public class TicketTypes {
         this.color = color;
     }
 
-    public List<Ticket> getTickets() {
-        return tickets;
-    }
-
-    public void setTickets(List<Ticket> tickets) {
-        this.tickets = tickets;
-    }
 }
 

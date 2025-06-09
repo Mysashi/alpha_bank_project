@@ -19,6 +19,15 @@ public class Ticket {
     @JoinColumn(name = "status_id")
     private TicketStatuses status;
     private String name;
+
+    public String getTicketType() {
+        return ticketType;
+    }
+
+    public void setTicketType(String ticketType) {
+        this.ticketType = ticketType;
+    }
+
     private String description;
     private Long histTicketId;
 
@@ -40,13 +49,9 @@ public class Ticket {
 
     }
 
-    @ManyToOne
-    @JoinColumn(name = "ticket_type_id")
-    private TicketTypes ticketType;
+    private String ticketType;
     private String createdAt;
 
-    @OneToMany(mappedBy = "ticket")
-    private List<TicketHistory> ticketHistories;
 
     @ManyToMany
     @JoinTable(
@@ -99,13 +104,7 @@ public class Ticket {
         this.histTicketId = histTicketId;
     }
 
-    public TicketTypes getTicketType() {
-        return ticketType;
-    }
 
-    public void setTicketType(TicketTypes ticketType) {
-        this.ticketType = ticketType;
-    }
 
     public String getCreatedAt() {
         return createdAt;
@@ -115,13 +114,8 @@ public class Ticket {
         this.createdAt = createdAt;
     }
 
-    public List<TicketHistory> getTicketHistories() {
-        return ticketHistories;
-    }
 
-    public void setTicketHistories(List<TicketHistory> ticketHistories) {
-        this.ticketHistories = ticketHistories;
-    }
+
 
     public List<Label> getLabels() {
         return labels;
