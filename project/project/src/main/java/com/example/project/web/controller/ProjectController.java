@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("api/projects")
 public class ProjectController {
 
     @Autowired
@@ -21,6 +21,7 @@ public class ProjectController {
     public ResponseEntity<?> getAllProjects() {
         try {
             List<Project> projects = projectService.getAllProjects();
+            System.out.println(projects);
             return ResponseEntity.ok(projects);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -31,11 +32,14 @@ public class ProjectController {
     public ResponseEntity<?> createProject(@RequestBody Project projectReq) {
         try {
             Project project = projectService.createProject(projectReq);
+            projectService.createBoard(project);
             return new ResponseEntity<>(project, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+
 
     @GetMapping("/{projectId}")
     public ResponseEntity<?> getProjectById(@PathVariable Long projectId) {

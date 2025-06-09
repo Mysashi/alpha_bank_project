@@ -384,6 +384,72 @@
       </div>
     </div>
   </div>
+  <script>
+    console.log("DEBUG OF MAIN");
+    const url = 'http://localhost:8080/api/projects'; // Замените на ваш URL
+let boardId;
+fetch(url)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json(); // Или response.text(), если ожидаете текст
+  })
+  .then(data => {
+    // Обработка полученных данных
+    console.log(data);
+    for (const element of data) {
+      const teamCard = document.createElement('div');
+      const teamList = document.getElementById('teamsList');
+    teamCard.classList.add('team-card');
+    teamCard.style = 'flex: 0 1 calc(33.333% - 20px); display: flex; align-items: center; gap: 12px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border-radius: 12px; padding: 12px 16px;';
+    const teamId = element.id;
+    const urlBoard = `http://localhost:8080/api/boards/${teamId}`;
+    fetch(urlBoard)
+    .then(response => {
+    if (!response.ok) {
+      throw new Error(`Ошибка HTTP: ${response.status}`);
+    }
+    return response.json(); // или response.text(), если ответ не JSON
+  })
+  .then(data => {
+    console.log('Успешно получены данные:', data);
+    boardId = data[0].boardId;
+    const teamLink = `/pages/Dashboard/tasks.html?teamId=${teamId}?boardId=${boardId}`;
+    // Ссылка будет вставлена в карточку команды
+    teamCard.innerHTML = `
+      <a href="${teamLink}" style="width: 100%; text-decoration: none; color: inherit;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #c4c4c4;"></div>
+        <div>
+          <div style="font-weight: 600;">${element.name}</div>
+          <div style="font-size: 14px; color: #666; display: flex; align-items: center; gap: 4px;">
+            <img src="img/user-icon.svg" alt="Участники" style="width: 14px; height: 14px;" />
+          </div>
+        </div>
+        <div style="margin-left: auto; cursor: pointer;">⋮</div>
+      </a>
+    `;
+    
+    // Добавление карточки в список команд
+    teamList.appendChild(teamCard);
+  })
+  .catch(error => {
+    console.error('Ошибка при выполнении запроса:', error);
+  });
+    
+}
+    
+
+    
+  })
+  .catch(error => {
+    // Обработка ошибок
+    console.error('Fetch error:', error);
+  });
+  </script>
+    
+
+
 
   <script>
     // Выпадающее меню "Команды"
@@ -536,11 +602,49 @@ document.getElementById('submitTeamBtn').addEventListener('click', function() {
   const teamMembers = document.getElementById('teamMembers').value.split(',');
 
   if (teamName && teamDescription) {
+    const data = {
+      name: teamName,
+      description: teamDescription
+    }
+    const url = 'http://localhost:8080/api/projects'; // Замените на ваш URL
+    fetch(url, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json' // Укажите тип контента (обычно JSON)
+    //  'Content-Type': 'application/x-www-form-urlencoded' // для форм
+    //  'Content-Type': 'multipart/form-data' // для файлов
+  },
+  body: JSON.stringify(data) // Преобразуйте данные в JSON строку
+  // body: new URLSearchParams(data) // Для application/x-www-form-urlencoded
+  // body: formData // Для multipart/form-data
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json(); // Или response.text(), если ожидаете текст
+  })
+  .then(data => {
+    // Обработка ответа от сервера
+    console.log("Success");
     const teamList = document.getElementById('teamsList');
-    const teamId = generateUniqueId();  // Генерация уникального ID для команды
-
-    // Ссылка на страницу с деталями команды
-    const teamLink = `/pages/Dashboard/team-dashboard.html?teamId=${teamId}`;
+    const teamId = data.id;  // Генерация уникального ID для команды
+    let boardId2;
+    
+    const urlBoard = `http://localhost:8080/api/boards/${teamId}`
+    console.log("DIE");
+    fetch(urlBoard)
+    .then(response => {
+    if (!response.ok) {
+      throw new Error(`Ошибка HTTP: ${response.status}`);
+    }
+    return response.json(); // или response.text(), если ответ не JSON
+  })
+  .then(data => {
+    console.log('Успешно получены данные:', data);
+    boardId2 = data[0].boardId;
+    console.log(boardId);
+    const teamLink = `/pages/Dashboard/task.html?teamId=${teamId}?boardId=${boardId2}`;
 
     const teamCard = document.createElement('div');
     teamCard.classList.add('team-card');
@@ -561,7 +665,9 @@ document.getElementById('submitTeamBtn').addEventListener('click', function() {
       </a>
     `;
 
-    // Добавление карточки в список команд
+
+
+// Добавление карточки в список команд
     teamList.appendChild(teamCard);
 
     // Очистка формы после добавления команды
@@ -569,8 +675,21 @@ document.getElementById('submitTeamBtn').addEventListener('click', function() {
     document.getElementById('teamDescription').value = '';
     document.getElementById('teamMembers').value = '';
 
-    // Скрыть форму после добавления команды
-    document.getElementById('createTeamForm').style.display = 'none';
+// Скрыть форму после добавления команды
+document.getElementById('createTeamForm').style.display = 'none';
+})
+.catch(error => {
+// Обработка ошибок
+console.error('Fetch error:', error);
+  })
+  .catch(error => {
+    console.error('Ошибка при выполнении запроса:', error);
+  });
+
+  
+   
+  });
+    
   } else {
     alert('Пожалуйста, заполните все поля.');
   }

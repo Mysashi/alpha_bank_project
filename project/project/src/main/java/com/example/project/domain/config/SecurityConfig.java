@@ -21,9 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -47,26 +49,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http.csrf(AbstractHttpConfigurer::disable)
-//                .cors(httpSecurityCorsConfigurer ->
-//                        httpSecurityCorsConfigurer.configurationSource(req ->
-//                                new CorsConfiguration().applyPermitDefaultValues())) //For using through front-end
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/users//create", "/feedbacks/create").authenticated() //You can delete this string for using all w|o authenticated
-//                        .anyRequest().permitAll())
-//                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
-//                .build();
 
+
+        System.out.println("INITIATED!!!!");
 
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.csrf()
+        return http.cors(cors -> cors
+                .configurationSource(corsConfigurationSource())
+        )
+                .csrf()
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/hackatons/**").permitAll()
+                .requestMatchers("/api/projects/**").permitAll()
                 .requestMatchers("/refreshToken/**").permitAll()
+                .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers("/api/boards/**").permitAll()
+                .requestMatchers("projects/**").permitAll()
+                .requestMatchers("/api/tasks/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
@@ -80,17 +82,23 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        System.out.println("INITIATED!!!!");
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/greeting-javaconfig").allowedOrigins("http://localhost:5500")
-                        .allowedOrigins("http://127.0.0.1:5500");
-            }
-        };
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("null")); // Разрешить все источники (НЕ РЕКОМЕНДУЕТСЯ ДЛЯ ПРОДАКШЕНА!)
+        configuration.setAllowedOrigins(List.of("http://127.0.0.1:5500/"));
+        //configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Или укажите конкретные источники
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+        configuration.setAllowCredentials(true); // Разрешить передачу куки и заголовков авторизации
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 

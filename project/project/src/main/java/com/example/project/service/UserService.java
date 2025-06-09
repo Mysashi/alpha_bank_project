@@ -59,7 +59,8 @@ public class UserService {
 
     public void addUser(User user){
 
-        System.out.println(user.getUsername());
+        System.out.println(user.getToken());
+        System.out.println(user.getPassword());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.ROLE_USER);
         save(user);

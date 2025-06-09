@@ -1,8 +1,11 @@
 package com.example.project.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -12,13 +15,22 @@ public class Project {
     @Id
     private Long Id;
 
+    public Project() {
+
+    }
 
     @ManyToMany
     private List<Team> teams;
 
 
-    @OneToMany(mappedBy = "project")
-    private List<Board> board;
+    public void addBoard(Board boardToAdd) {
+        board.add(boardToAdd);
+    }
+
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Board> board = new ArrayList<>();
 
     @NotBlank
     private String name;

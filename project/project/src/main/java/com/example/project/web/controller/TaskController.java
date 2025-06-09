@@ -1,6 +1,8 @@
 package com.example.project.web.controller;
 
+import com.example.project.domain.entity.Ticket;
 import com.example.project.service.TaskService;
+import jakarta.validation.Path;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,16 +15,17 @@ import java.util.NoSuchElementException;
 
 @RestController
 
+@RequestMapping("api/tasks")
 public class TaskController {
 
     @Autowired
     TaskService taskService;
 
 
-    @GetMapping("/projects/{projectId}/tasks")
-    public ResponseEntity<?> getTasksByProjectId(@PathVariable Long projectId) {
+    @GetMapping("{boardId}")
+    public ResponseEntity<?> getTasksByBoardId(@PathVariable Long boardId) {
         try {
-            List tasks = taskService.getTasksByProjectId(projectId);
+            List<Ticket> tasks = taskService.getTasksByBoardId(boardId);
             return ResponseEntity.ok(tasks);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -32,10 +35,11 @@ public class TaskController {
     }
 
     // Create a task for a project
-    @PostMapping("/projects/{projectId}/tasks")
-    public ResponseEntity<?> createTask(@PathVariable Long projectId, @Valid @RequestBody Task taskReq) {
+    @PostMapping("projects/{projectId}/boards/{boardId}/tasks")
+    public ResponseEntity<?> createTask(@PathVariable Long boardId, @PathVariable Long projectId, @Valid @RequestBody Ticket taskReq) {
         try {
-            Task task = taskService.createTask(projectId, taskReq);
+            System.out.println(boardId);
+            Ticket task = taskService.createTask(boardId, projectId, taskReq);
             return new ResponseEntity<>(task, HttpStatus.CREATED);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -47,8 +51,8 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/tasks/{taskId}")
-    public ResponseEntity<?> getTaskById(@PathVariable Long taskId) {
+    @GetMapping("projects/{projectId}/board/{boardId}/tasks/{taskId}")
+    public ResponseEntity<?> getTaskById(@PathVariable Long boardId, @PathVariable Long projectId, @PathVariable Long taskId) {
         try {
             Task task = taskService.getTaskById(taskId);
             return ResponseEntity.ok(task);
@@ -59,8 +63,8 @@ public class TaskController {
         }
     }
 
-    @PatchMapping("/tasks/{taskId}")
-    public ResponseEntity<?> updateTask(@PathVariable Long taskId, @Valid @RequestBody Task taskReq) {
+    @PatchMapping("projects/{projectId}/board/{boardId}/tasks/{taskId}")
+    public ResponseEntity<?> updateTask(@PathVariable Long taskId,  @PathVariable Long projectId, @Valid @RequestBody Task taskReq) {
         try {
             Task task = taskService.updateTask(taskId, taskReq);
             return ResponseEntity.ok(task);
@@ -72,8 +76,8 @@ public class TaskController {
     }
 
     // Delete a task
-    @DeleteMapping("/tasks/{taskId}")
-    public ResponseEntity<?> deleteTask(@PathVariable Long taskId) {
+    @DeleteMapping("projects/{projectId}/board/{boardId}/tasks/{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable Long taskId, @PathVariable Long projectId) {
         try {
             taskService.deleteTask(taskId);
             return new ResponseEntity<>("Task deleted successfully", HttpStatus.OK);

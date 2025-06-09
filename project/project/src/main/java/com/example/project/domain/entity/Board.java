@@ -1,33 +1,46 @@
 package com.example.project.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Board {
     @Id
     @GeneratedValue
-    private Long Id;
+    private Long id;
     private Long teamId;
 
     @ManyToOne
     @JoinColumn(name = "project")
     private Project project;
+
     private String name;
     private String description;
     private String createdAt;
     private String updatedAt;
 
-    @OneToMany(mappedBy = "board")
-    private List<TicketStatuses> ticketStatuses;
+//    @OneToMany(mappedBy = "board")
+//    private List<TicketStatuses> ticketStatuses;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets = new ArrayList<>();
+
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
 
     public Long getBoardId() {
-        return Id;
+        return id;
     }
 
     public void setBoardId(Long boardId) {
-        this.Id = boardId;
+        this.id = boardId;
     }
 
     public Long getTeamId() {
@@ -78,11 +91,11 @@ public class Board {
         this.updatedAt = updatedAt;
     }
 
-    public List<TicketStatuses> getTicketStatuses() {
-        return ticketStatuses;
-    }
-
-    public void setTicketStatuses(List<TicketStatuses> ticketStatuses) {
-        this.ticketStatuses = ticketStatuses;
-    }
+//    public List<TicketStatuses> getTicketStatuses() {
+//        return ticketStatuses;
+//    }
+//
+//    public void setTicketStatuses(List<TicketStatuses> ticketStatuses) {
+//        this.ticketStatuses = ticketStatuses;
+//    }
 }

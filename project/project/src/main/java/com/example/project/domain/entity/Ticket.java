@@ -1,6 +1,11 @@
 package com.example.project.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -10,12 +15,30 @@ public class Ticket {
     @GeneratedValue
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id")
     private TicketStatuses status;
     private String name;
     private String description;
     private Long histTicketId;
+
+    @ManyToOne
+    @JoinColumn(name = "board")
+    @JsonBackReference
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Board board;
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
+    public Ticket() {
+
+    }
 
     @ManyToOne
     @JoinColumn(name = "ticket_type_id")

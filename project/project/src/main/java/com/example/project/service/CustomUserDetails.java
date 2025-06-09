@@ -1,6 +1,10 @@
 package com.example.project.service;
 
+import com.example.project.domain.entity.Token;
 import com.example.project.domain.entity.User;
+import com.example.project.domain.repository.TokenRepository;
+import com.example.project.domain.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +15,10 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
     private final User user;
 
+
+
+
+    @Autowired
     public CustomUserDetails(User user) {
         this.user = user;
     }
@@ -20,8 +28,8 @@ public class CustomUserDetails implements UserDetails {
         return List.of(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
-    public String getToken() {
-        return user.getToken().getToken();
+    public void getToken() {
+        System.out.println("Found");
     }
 
     @Override
